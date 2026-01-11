@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import ICAL from "ical.js";
-import { getDatesForWeeks, fetchDaySchedule } from "../src/lib/schedule";
-import { Course } from "../src/types/schedule";
+import { getDatesForWeeks, fetchDaySchedule } from "@/lib/schedule";
+import { Course } from "@/types/schedule";
 import crypto from 'crypto';
 import { parse } from "node-html-parser";
 
