@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import ICAL from "ical.js";
 import { parse } from "node-html-parser";
-import type { Course } from "../src/types/schedule";
+import type { Course } from "../../src/types/schedule.js";
 import crypto from 'crypto';
 
 // --- Logic copied from the frontend ---
