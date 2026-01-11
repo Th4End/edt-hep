@@ -1,17 +1,27 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import ICAL from "ical.js";
-import { getDatesForWeeks, fetchDaySchedule } from "@/lib/schedule";
-import { Course } from "@/types/schedule";
-import crypto from 'crypto';
 import { parse } from "node-html-parser";
+import type { Course } from "../../src/types/schedule";
+import crypto from 'crypto';
 
-// Basic validation for username
+// --- Logic copied from the frontend ---
+
 const isStringDotString = (input: string): boolean => {
   const regex = /^[a-zA-Z]+\.[a-zA-Z]+\d*$/;
   return regex.test(input);
 };
 
-// Server-side parsing function using node-html-parser
+const getDatesForWeeks = (numWeeks: number, startDate: Date = new Date()): string[] => {
+    const dates: string[] = [];
+    const currentDate = new Date(startDate);
+    for (let i = 0; i < numWeeks * 7; i++) {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() + i);
+        dates.push(d.toISOString().split('T')[0]);
+    }
+    return dates;
+};
+
 const parseHtmlDayNode = (html: string): Course[] => {
   const doc = parse(html);
   const courses: Course[] = [];
@@ -35,20 +45,29 @@ const parseHtmlDayNode = (html: string): Course[] => {
   return courses;
 };
 
+const fetchDayHtml = async (username: string, date: string): Promise<string> => {
+    const url = `https://edtmobiliteng.wigorservices.net/WebPsDyn.aspx?Action=posETUD&serverid=C&tel=${encodeURIComponent(username)}&date=${encodeURIComponent(date)}%208:00`;
+    try {
+      const resp = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; EdtHep-iCal-Generator/1.0)" }
+      });
+      if (!resp.ok) return '';
+      return await resp.text();
+    } catch {
+      return '';
+    }
+};
 
-// Function to create a stable UID for a course to avoid duplicates
 const createStableUID = (course: Course, date: string, user: string): string => {
   const hash = crypto.createHash('md5');
-  const data = `${user}|${date}|${course.start}|${course.subject}|${course.room}`;
-  hash.update(data);
+  hash.update(`${user}|${date}|${course.start}|${course.subject}|${course.room}`);
   return hash.digest('hex');
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
 
+// --- API Handler ---
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { user } = req.query;
 
   if (typeof user !== "string" || !isStringDotString(user)) {
@@ -56,60 +75,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // 1. Fetch schedule data for the next 8 weeks
-    const today = new Date();
-    const datesToFetch = getDatesForWeeks(8, today);
-    const schedulePromises = datesToFetch.map(async (date) => {
-        const day = await fetchDaySchedule(user, date, false); // Fetching for server-side, no proxy
-        return { ...day, courses: parseHtmlDayNode(day.rawHtml || '') }; // Parse HTML here
-    });
-    const dailySchedules = await Promise.all(schedulePromises);
+    const datesToFetch = getDatesForWeeks(8, new Date());
+    const htmlPromises = datesToFetch.map(date => fetchDayHtml(user, date));
+    const htmlResults = await Promise.all(htmlPromises);
 
-    // 2. Create an iCal component
+    const coursesByDate = htmlResults.map((html, i) => ({
+        date: datesToFetch[i],
+        courses: parseHtmlDayNode(html),
+    }));
+
     const cal = new ICAL.Component(["vcalendar"]);
     cal.addPropertyWithValue("prodid", "-//Edt-Hep//Schedule//FR");
     cal.addPropertyWithValue("version", "2.0");
     cal.addPropertyWithValue("calscale", "GREGORIAN");
     cal.addPropertyWithValue("name", `Emploi du temps pour ${user}`);
     cal.addPropertyWithValue("x-wr-calname", `Emploi du temps pour ${user}`);
-    cal.addPropertyWithValue("description", `EDT pour ${user} généré par Edt-Hep.`);
-    cal.addPropertyWithValue("x-wr-caldesc", `EDT pour ${user} généré par Edt-Hep.`);
 
-    // 3. Add events to the calendar
-    dailySchedules.forEach(day => {
-      if (!day.courses.length) return;
-
+    coursesByDate.forEach(day => {
+      if (!day.courses.length || !day.date) return;
       day.courses.forEach(course => {
         try {
             const [startHour, startMinute] = course.start.split(':').map(Number);
             const [endHour, endMinute] = course.end.split(':').map(Number);
-
             const startDate = new Date(day.date);
-            startDate.setHours(startHour, startMinute, 0, 0);
-
+            startDate.setUTCHours(startHour, startMinute, 0, 0);
             const endDate = new Date(day.date);
-            endDate.setHours(endHour, endMinute, 0, 0);
+            endDate.setUTCHours(endHour, endMinute, 0, 0);
 
             const event = new ICAL.Event(cal);
             event.summary = course.subject;
             event.startDate = ICAL.Time.fromJSDate(startDate, true);
             event.endDate = ICAL.Time.fromJSDate(endDate, true);
-            if (course.room) {
-                event.location = course.room;
-            }
-            if (course.teacher) {
-                event.description = `Prof: ${course.teacher}`;
-            }
+            if (course.room) event.location = course.room;
+            if (course.teacher) event.description = `Prof: ${course.teacher}`;
             event.uid = createStableUID(course, day.date, user);
-            
             cal.addSubcomponent(event);
-        } catch (e) {
-            console.error(`[ICAL_EVENT_ERROR] for user ${user} - Could not process course:`, course, e);
-        }
+        } catch {}
       });
     });
 
-    // 4. Set headers and send response
     res.setHeader("Content-Type", "text/calendar; charset=utf-8");
     res.setHeader("Content-Disposition", `attachment; filename="schedule-${user}.ics"`);
     res.status(200).send(cal.toString());

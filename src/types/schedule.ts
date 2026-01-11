@@ -4,8 +4,7 @@ import type { CSSProperties } from "react";
 export interface Day {
   day: string;
   date: string;
-  courses?: Course[];
-  rawHtml?: string;
+  courses: Course[];
 }
 
 /* Course: champs traduits */
