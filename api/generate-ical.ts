@@ -116,7 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const courses = htmlResults.flatMap((html, i) => parseHtmlDayNode(html, datesToFetch[i]));
 
     // 4. Création iCal
-    const cal = new ICAL.Component(["vcalendar"]);
+    const cal = new ICAL.Component("vcalendar");
     cal.updatePropertyWithValue("prodid", "-//Edt-Hep//Schedule//FR");
     cal.updatePropertyWithValue("version", "2.0");
     cal.updatePropertyWithValue("calscale", "GREGORIAN");
