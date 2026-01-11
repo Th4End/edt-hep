@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import ICAL from "ical.js";
 import { parse } from "node-html-parser";
-import type { Course } from "../../src/types/schedule.js";
+import type { Course } from "../src/types/schedule";
 import crypto from 'crypto';
 
 // --- Logic copied from the frontend ---
@@ -110,7 +110,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (course.teacher) event.description = `Prof: ${course.teacher}`;
             event.uid = createStableUID(course, day.date, user);
             cal.addSubcomponent(event.component);
-        } catch {}
+        } catch (e) {
+            console.error(`[ICAL_EVENT_ERROR] Skipping course due to error:`, { user, course, error: e });
+        }
       });
     });
 
@@ -118,8 +120,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Content-Disposition", `attachment; filename="schedule-${user}.ics"`);
     res.status(200).send(cal.toString());
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`[ICAL_GENERATION_ERROR] for user ${user}:`, error);
-    res.status(500).json({ error: "Failed to generate iCal file." });
+    res.status(500).json({ 
+        error: "Failed to generate iCal file.",
+        details: error.message,
+        stack: error.stack,
+    });
   }
 }
