@@ -133,15 +133,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const event = new ICAL.Event(vevent);
 
         // --- GESTION DU TEMPS CORRIGÉE ---
-        // On construit une chaîne ISO locale: "2023-01-01T08:30:00"
-        // ICAL.Time.fromString sans 'Z' à la fin crée une "Floating Time" (heure locale du calendrier)
-        // C'est le plus sûr pour éviter les décalages horaires UTC incorrects.
-        const startStr = `${course.date}T${course.start}:00`;
-        const endStr = `${course.date}T${course.end}:00`;
+        const [startHour, startMinute] = course.start.split(':').map(Number);
+        const [endHour, endMinute] = course.end.split(':').map(Number);
+        const startDate = new Date(course.date);
+        startDate.setUTCHours(startHour, startMinute, 0, 0);
+        const endDate = new Date(course.date);
+        endDate.setUTCHours(endHour, endMinute, 0, 0);
 
         event.summary = course.subject;
-        event.startDate = ICAL.Time.fromString(startStr, true);
-        event.endDate = ICAL.Time.fromString(endStr, true);
+        event.startDate = ICAL.Time.fromJSDate(startDate, true);
+        event.endDate = ICAL.Time.fromJSDate(endDate, true);
         
         if (course.room) event.location = course.room;
         if (course.teacher) event.description = `Enseignant: ${course.teacher}`;
