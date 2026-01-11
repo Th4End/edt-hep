@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import ICAL from "ical.js";
+import * as ICAL from "ical.js";
 import { parse } from "node-html-parser";
-import type { Course } from "../src/types/schedule";
+import type { Course } from "../../src/types/schedule.js";
 import crypto from 'crypto';
 
 // --- Logic copied from the frontend ---
@@ -109,7 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (course.room) event.location = course.room;
             if (course.teacher) event.description = `Prof: ${course.teacher}`;
             event.uid = createStableUID(course, day.date, user);
-            cal.addSubcomponent(event.component);
+            cal.addSubcomponent(event);
         } catch (e) {
             console.error(`[ICAL_EVENT_ERROR] Skipping course due to error:`, { user, course, error: e });
         }
