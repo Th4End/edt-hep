@@ -123,8 +123,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     cal.updatePropertyWithValue("name", `EDT ${user}`);
     cal.updatePropertyWithValue("x-wr-calname", `EDT ${user}`);
     // Rafraîchissement suggéré toutes les 2 heures
-    cal.updatePropertyWithValue("refresh-interval", "PT2H"); 
-    cal.updatePropertyWithValue("x-published-ttl", "PT2H");
+    cal.updatePropertyWithValue("refresh-interval", "PT1H");
+    cal.updatePropertyWithValue("x-published-ttl", "PT1H");
 
     courses.forEach(course => {
       try {
