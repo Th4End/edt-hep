@@ -232,13 +232,13 @@ const Calendar = () => {
       .filter(day => workingDays.includes(day.day))
       .map((day) => ({
         ...day,
-        courses: day.courses.filter((course) => {
+        courses: day.courses?.filter((course) => {
           const matchSubject = selectedSubjects.has(course.subject);
           const matchSource = course.source ? selectedSources.has(course.source) : true;
           const matchDistanciel =
             !filterDistanciel || course.room.startsWith("SALLE");
           return matchSubject && matchSource && matchDistanciel;
-        }),
+        }) ?? [],
       }));
   }, [schedule, selectedSubjects, selectedSources, filterDistanciel]);
 

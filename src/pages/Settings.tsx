@@ -46,6 +46,7 @@ const Settings = () => {
   const [googleCalendarUrl, setGoogleCalendarUrl] = useState(getGoogleCalendarUrl(username) || "");
   const [showPublicHint, setShowPublicHint] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
+  const [hasCopiedSubscription, setHasCopiedSubscription] = useState(false);
 
 
   // State for shortcuts
@@ -342,6 +343,39 @@ const Settings = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Subscription Section */}
+        <AccordionItem value="ical-subscription" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
+          <AccordionTrigger className="text-xl font-semibold mb-4">Abonnement à votre emploi du temps</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                    Utilisez ce lien unique pour vous abonner à votre emploi du temps dans n'importe quelle application de calendrier (Google Calendar, Outlook, Calendrier Apple). Votre calendrier se mettra à jour automatiquement.
+                </p>
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                    <Label htmlFor="subscription-url" className="text-sm">URL d'abonnement iCal</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                        <Input
+                            id="subscription-url"
+                            readOnly
+                            value={`${window.location.origin}/api/generate-ical?user=${username}`}
+                            className="text-xs"
+                        />
+                        <Button variant="ghost" size="icon" onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/api/generate-ical?user=${username}`);
+                            setHasCopiedSubscription(true);
+                            setTimeout(() => setHasCopiedSubscription(false), 2000);
+                        }}>
+                            {hasCopiedSubscription ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                        </Button>
+                    </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                    Note : La mise à jour peut prendre plusieurs heures selon votre application de calendrier.
+                </p>
             </div>
           </AccordionContent>
         </AccordionItem>

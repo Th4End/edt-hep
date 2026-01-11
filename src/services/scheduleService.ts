@@ -2,6 +2,7 @@ import { COLORS } from "@/constants/schedule";
 import { Course, Day } from "@/types/schedule";
 import axios from "axios";
 import ICAL from "ical.js";
+import { fetchDaySchedule, parseHtmlDay } from "@/lib/schedule"; // Use the shared function
 
 export const isStringDotString = (input: string): boolean => {
   const regex = /^[a-zA-Z]+\.[a-zA-Z]+\d*$/;
@@ -13,7 +14,7 @@ const assignColors = (schedule: Day[]): Day[] => {
   let colorIndex = 0;
 
   schedule.forEach((day) => {
-    day.courses.forEach((course) => {
+    day.courses?.forEach((course) => {
       if (!subjectColors.has(course.subject)) {
         subjectColors.set(course.subject, COLORS[colorIndex % COLORS.length]);
         colorIndex++;
@@ -25,74 +26,50 @@ const assignColors = (schedule: Day[]): Day[] => {
   return schedule;
 };
 
-function getWorkingDays(dateInput?: string | number | null): string[] {
-    const currentDate = new Date();
+// New helper to get the dates for the week based on an offset
+const getWeekDays = (weekOffset: number = 0): string[] => {
+    const today = new Date();
+    today.setDate(today.getDate() + weekOffset * 7);
 
-    let weeksToAdd = 0;
-    if (typeof dateInput === "string" && /^-?\d+$/.test(dateInput)) {
-        weeksToAdd = parseInt(dateInput, 10);
-    } else if (typeof dateInput === "number") {
-        weeksToAdd = dateInput;
-    }
-
-    if (weeksToAdd !== 0) {
-        currentDate.setDate(currentDate.getDate() + weeksToAdd * 7);
-    }
-
-    const dayOfWeek = currentDate.getDay();
+    const dayOfWeek = today.getDay();
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(currentDate);
-    monday.setDate(currentDate.getDate() + diffToMonday);
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
 
-    const workingDays: Date[] = [];
+    const weekDays: string[] = [];
     for (let i = 0; i < 7; i++) {
         const d = new Date(monday);
         d.setDate(monday.getDate() + i);
-        workingDays.push(d);
+        weekDays.push(d.toISOString().split("T")[0]);
     }
-
-    return workingDays.map((d) => d.toISOString().split("T")[0]);
+    return weekDays;
 }
 
-const parseHtmlDay = (html: string): Course[] => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+export const fetchSchedule = async (
+  username: string,
+  dateInput?: string | null
+): Promise<Day[]> => {
+  if (!isStringDotString(username)) return [];
 
-  const courses: Course[] = [];
-  doc.querySelectorAll(".Ligne").forEach((ligne) => {
-    const start = (ligne.querySelector(".Debut")?.textContent || "").trim();
-    const end = (ligne.querySelector(".Fin")?.textContent || "").trim();
-    const subject = (ligne.querySelector(".Matiere")?.textContent || "").trim();
-    const roomRaw = (ligne.querySelector(".Salle")?.textContent || "").trim();
-    const teacherRaw = (ligne.querySelector(".Prof")?.textContent || "").trim();
+  const weekOffset = dateInput ? parseInt(dateInput, 10) : 0;
+  const weekDays = getWeekDays(weekOffset);
 
-    const room = roomRaw || "";
-    const teacher = teacherRaw || "";
+  const dayPromises = await Promise.all(
+    weekDays.map(date => fetchDaySchedule(username, date, true)) // Use proxy
+  );
 
-    if (start && end && subject) {
-      courses.push({
-        start,
-        end,
-        subject,
-        room,
-        teacher,
-        color: { background: "", text: "" },
-        source: "EDT",
-      });
-    }
-  });
+  const schedule = dayPromises.map(day => ({
+      ...day,
+      courses: parseHtmlDay(day.rawHtml || ''),
+  }));
 
-  return courses;
+  return assignColors(schedule.filter(day => day.courses && day.courses.length > 0));
 };
 
+// --- Functions for custom iCal sources (unchanged) ---
+
 const dayOfWeekMap: { [key: number]: string } = {
-    1: "Lundi",
-    2: "Mardi",
-    3: "Mercredi",
-    4: "Jeudi",
-    5: "Vendredi",
-    6: "Samedi",
-    0: "Dimanche",
+    1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 0: "Dimanche",
 };
 
 const parseICalData = (icalData: string, weekOffset: number, sourceName: string): Day[] => {
@@ -107,69 +84,36 @@ const parseICalData = (icalData: string, weekOffset: number, sourceName: string)
 
     const coursesByDay: { [key: string]: Course[] } = {};
 
-    vevents.forEach((vevent: any) => {
+    vevents.forEach((vevent: ICAL.Component) => {
         const event = new ICAL.Event(vevent);
         const dtstart = event.startDate.toJSDate();
 
         if (dtstart >= weekStart && dtstart < weekEnd) {
             const dayOfWeek = dtstart.getDay();
             const dayName = dayOfWeekMap[dayOfWeek];
-            const date = dtstart.toISOString().split("T")[0];
-
-            if (!coursesByDay[dayName]) {
-                coursesByDay[dayName] = [];
-            }
-
+            if (!coursesByDay[dayName]) coursesByDay[dayName] = [];
             coursesByDay[dayName].push({
                 start: event.startDate.toJSDate().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
                 end: event.endDate.toJSDate().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
                 subject: event.summary,
                 room: event.location || "",
-                teacher: "", // iCal doesn't always have a teacher field in the same way
+                teacher: "",
                 color: { background: "", text: "" },
                 source: sourceName,
             });
         }
     });
-
-    const schedule: Day[] = Object.keys(dayOfWeekMap).map(dayIndex => {
-        const dayName = dayOfWeekMap[dayIndex as unknown as number];
-        return {
-            day: dayName,
-            date: "", // This would need to be calculated based on the week
-            courses: coursesByDay[dayName] || []
-        };
-    });
+    
+    // This part needs revision to correctly map dates
+    const schedule: Day[] = Object.values(dayOfWeekMap).map(dayName => ({
+        day: dayName,
+        date: "", // Date calculation would be complex here, needs improvement if used
+        courses: coursesByDay[dayName] || []
+    }));
 
     return schedule;
 };
 
-export const fetchSchedule = async (
-  username: string,
-  dateInput?: string | null
-): Promise<Day[]> => {
-  if (!isStringDotString(username)) return [];
-
-  const workingDays = getWorkingDays(dateInput ?? null);
-  const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-
-  const schedule = await Promise.all(
-    workingDays.map(async (date, i) => {
-      const url = `https://corsproxy.io/?https://edtmobiliteng.wigorservices.net/WebPsDyn.aspx?Action=posETUD&serverid=C&tel=${username}&date=${encodeURIComponent(
-        date
-      )}%208:00`;
-
-      try {
-        const { data } = await axios.get<string>(url);
-        return { day: daysOfWeek[i], date, courses: parseHtmlDay(data) };
-      } catch {
-        return { day: daysOfWeek[i], date, courses: [] };
-      }
-    })
-  );
-
-  return assignColors(schedule);
-};
 
 export const fetchCustomSchedule = async (
     icalUrl: string,
@@ -189,20 +133,12 @@ export const fetchCustomSchedule = async (
 
 export const getUniqueSources = (schedule: Day[]): string[] => {
   const sources = new Set<string>();
-  schedule.forEach((day) => {
-    day.courses.forEach((course) => {
-      if (course.source) {
-        sources.add(course.source);
-      }
-    });
-  });
+  schedule.forEach((day) => day.courses?.forEach((course) => course.source && sources.add(course.source)));
   return Array.from(sources);
 };
 
 export const getUniqueSubjects = (schedule: Day[]): string[] => {
   const subjects = new Set<string>();
-  schedule.forEach((day) => {
-    day.courses.forEach((course) => subjects.add(course.subject));
-  });
+  schedule.forEach((day) => day.courses?.forEach((course) => subjects.add(course.subject)));
   return Array.from(subjects);
 };
