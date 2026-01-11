@@ -42,6 +42,7 @@ import CalendarSkeleton from "@/components/schedule/CalendarSkeleton";
 import { usePrimaryColor } from "@/hooks/usePrimaryColor";
 import { useExportImage } from "@/hooks/useExportImage";
 import { Day } from "@/types/schedule";
+import { getGoogleCalendarUrl } from "@/utils/googleCalendar";
 import {
   startOfMonth,
   endOfMonth,
@@ -69,10 +70,11 @@ const Calendar = () => {
   const [filterDistanciel, setFilterDistanciel] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"week" | "day" | "month">("week");
+  const [viewMode, setViewMode] = useState<"week" | "day" | "month" | "google">("week");
   const [selectedDay, setSelectedDay] = useState<string>("Lundi");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [googleCalendarUrl, setGoogleCalendarUrl] = useState<string | null>(null);
 
   // Primary color (via hook)
   const { primaryColor, setPrimaryColor } = usePrimaryColor("#4169e1");
@@ -104,6 +106,7 @@ const Calendar = () => {
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
+      setGoogleCalendarUrl(getGoogleCalendarUrl(storedUsername));
     } else {
       navigate("/login");
     }
@@ -113,7 +116,7 @@ const Calendar = () => {
     if (username) {
       if (viewMode === "month") {
         loadMonthSchedule(username, selectedDate);
-      } else {
+      } else if (viewMode !== "google") {
         loadSchedule(username, currentWeek);
       }
     }
@@ -493,10 +496,10 @@ const Calendar = () => {
               <Tabs
                 value={viewMode}
                 onValueChange={(v) => {
-                  setViewMode(v as "week" | "day" | "month");
+                  setViewMode(v as "week" | "day" | "month" | "google");
                 }}
               >
-                <TabsList className="grid grid-cols-3">
+                <TabsList className="grid grid-cols-4">
                   <TabsTrigger value="day" className="flex items-center gap-2">
                     <CalendarDays className="w-4 h-4" /> Jour
                   </TabsTrigger>
@@ -508,6 +511,10 @@ const Calendar = () => {
                     className="flex items-center gap-2"
                   >
                     <CalendarDays className="w-4 h-4" /> Mois
+                  </TabsTrigger>
+                  <TabsTrigger value="google" className="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" /><path d="M12 12L16 14" /><path d="M12 6V12" /></svg>
+                    Google
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -599,7 +606,25 @@ const Calendar = () => {
           </aside>
 
           <main>
-            {isLoading ? (
+            {viewMode === 'google' ? (
+              googleCalendarUrl ? (
+                <iframe
+                  src={`https://calendar.google.com/calendar/embed?src=${googleCalendarUrl}&ctz=Europe/Paris`}
+                  style={{ border: 0 }}
+                  width="100%"
+                  height="600"
+                  frameBorder="0"
+                  scrolling="no"
+                ></iframe>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p>Aucun calendrier Google n'est configuré.</p>
+                  <Button onClick={() => navigate('/settings')} className="mt-4">
+                    Configurer maintenant
+                  </Button>
+                </div>
+              )
+            ) : isLoading ? (
               <CalendarSkeleton />
             ) : filteredSchedule.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -676,3 +701,4 @@ const Calendar = () => {
 };
 
 export default Calendar;
+

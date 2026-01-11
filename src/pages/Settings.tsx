@@ -22,6 +22,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 
 
+import { getGoogleCalendarUrl, saveGoogleCalendarUrl } from "@/utils/googleCalendar";
+import { Check, Copy } from "lucide-react";
+
 interface CustomUrl {
   name: string;
   url: string;
@@ -36,6 +39,14 @@ const Settings = () => {
   const [showLandingPage, setShowLandingPage] = useState(() => {
     return localStorage.getItem("showLandingPage") !== "false";
   });
+
+  const username = useMemo(() => localStorage.getItem("username") || "", []);
+
+  // State for Google Calendar URL
+  const [googleCalendarUrl, setGoogleCalendarUrl] = useState(getGoogleCalendarUrl(username) || "");
+  const [showPublicHint, setShowPublicHint] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
+
 
   // State for shortcuts
   const [shortcuts, setShortcuts] = useState(getCustomShortcuts());
@@ -101,6 +112,22 @@ const Settings = () => {
   useEffect(() => {
     localStorage.setItem("showNotifications", JSON.stringify(showNotifications));
   }, [showNotifications]);
+
+  const handleSaveGoogleCalendarUrl = () => {
+    if (username) {
+      saveGoogleCalendarUrl(username, googleCalendarUrl);
+      toast({ title: "Succès", description: "URL du calendrier Google enregistrée." });
+    } else {
+      toast({ title: "Erreur", description: "Nom d'utilisateur non trouvé.", variant: "destructive" });
+    }
+  };
+
+  const handleCopy = () => {
+    const urlToCopy = `https://www.googleapis.com/calendar/v3/calendars/${googleCalendarUrl}/events`;
+    navigator.clipboard.writeText(urlToCopy);
+    setHasCopied(true);
+    setTimeout(() => setHasCopied(false), 2000);
+  };
 
   const handleAddShortcut = () => {
     if (!newShortcutKey || !newShortcutValue) {
@@ -264,9 +291,64 @@ const Settings = () => {
           </AccordionContent>
         </AccordionItem>
 
+        {/* Google Calendar Section */}
+        <AccordionItem value="google-calendar" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
+          <AccordionTrigger className="text-xl font-semibold mb-4">Intégration de calendrier externe</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Liez votre compte à un calendrier externe (Google, Outlook, etc.) pour afficher vos événements personnels à côté de vos cours.
+              </p>
+              <div className="flex gap-4">
+                <Input
+                  placeholder="exemple@gmail.com"
+                  value={googleCalendarUrl}
+                  onChange={(e) => {
+                    setGoogleCalendarUrl(e.target.value);
+                    if (e.target.value.includes("public")) {
+                      setShowPublicHint(true);
+                    } else {
+                      setShowPublicHint(false);
+                    }
+                  }}
+                />
+                <Button onClick={handleSaveGoogleCalendarUrl}>Enregistrer</Button>
+              </div>
+
+              {showPublicHint && (
+                <div className="mt-2 text-xs text-amber-500">
+                  <p>
+                    Il semble que vous ayez collé une URL publique. Pour une intégration complète, veuillez utiliser l'identifiant de votre calendrier.
+                  </p>
+                </div>
+              )}
+
+              <p className="text-xs text-muted-foreground mt-2">
+                Pour trouver l'identifiant de votre calendrier, allez dans les paramètres de votre calendrier Google, puis dans la section "Intégrer le calendrier".
+              </p>
+
+              {googleCalendarUrl && !googleCalendarUrl.includes("public") && (
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <Label className="text-sm">URL pour l'API Google Calendar</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      readOnly
+                      value={`https://www.googleapis.com/calendar/v3/calendars/${googleCalendarUrl}/events`}
+                      className="text-xs"
+                    />
+                    <Button variant="ghost" size="icon" onClick={handleCopy}>
+                      {hasCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
         {/* Custom Calendars Section */}
         <AccordionItem value="custom-calendars" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Calendriers personnalisés</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold mb-4">Calendriers personnalisés (iCal)</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
               {customUrls.map((url, index) => (
