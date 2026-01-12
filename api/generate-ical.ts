@@ -137,8 +137,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const endDate = new Date(endStr);
 
         event.summary = course.subject;
-        event.startDate = ICAL.Time.fromJSDate(startDate);
-        event.endDate = ICAL.Time.fromJSDate(endDate);
+        event.startDate = ICAL.Time.fromString(startStr, true);
+        event.endDate = ICAL.Time.fromString(endStr, true);
         
         if (course.room) event.location = course.room;
         if (course.teacher) event.description = `Enseignant: ${course.teacher}`;
