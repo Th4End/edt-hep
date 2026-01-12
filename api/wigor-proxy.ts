@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import type { Socket } from "net";
 
 // Validation identique à ton client
 const isStringDotString = (input: string): boolean => {
@@ -37,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const ip =
     (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-    (req.socket as any)?.remoteAddress ||
+    (req.socket as Socket)?.remoteAddress ||
     "unknown";
 
   if (!rateLimit(ip)) {

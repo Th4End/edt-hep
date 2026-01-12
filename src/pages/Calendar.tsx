@@ -125,7 +125,7 @@ const Calendar = () => {
       const mainSchedule = await fetchSchedule(user, weekOffset.toString());
       const customUrls = JSON.parse(localStorage.getItem("customCalendarUrls") || "[]");
 
-      let finalSchedule = mainSchedule;
+      const finalSchedule = mainSchedule;
 
       for (const customUrl of customUrls) {
         const customSchedule = await fetchCustomSchedule(customUrl.url, weekOffset, customUrl.name);

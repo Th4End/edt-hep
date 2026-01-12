@@ -85,7 +85,7 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
     }
 
     // Vérifie si l’utilisateur est protégé (PIN requis)
-    const usersEnv = (import.meta as any).env?.VITE_PROTECTED_USERS || '';
+    const usersEnv = (import.meta as ImportMeta).env?.VITE_PROTECTED_USERS || '';
     const protectedSet = new Set(
       usersEnv.split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean)
     );
@@ -104,7 +104,7 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
     }
 
     if (isProtected) {
-      const expectedPin = (import.meta as any).env?.VITE_PROTECTED_PIN || '';
+      const expectedPin = (import.meta as ImportMeta).env?.VITE_PROTECTED_PIN || '';
       if (pin !== expectedPin) {
         setIsLoading(false);
         toast({
@@ -159,7 +159,7 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
       return;
     }
 
-    const users = (import.meta as any).env?.VITE_PROTECTED_USERS || '';
+    const users = (import.meta as ImportMeta).env?.VITE_PROTECTED_USERS || '';
     const protectedSet = new Set(users.split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean));
     const protectedUser = protectedSet.has(processedUsername.toLowerCase());
 
@@ -174,7 +174,7 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
     }
 
     if (protectedUser) {
-      const expectedPin = (import.meta as any).env?.VITE_PROTECTED_PIN || '';
+      const expectedPin = (import.meta as ImportMeta).env?.VITE_PROTECTED_PIN || '';
       if (!pin || pin !== expectedPin) {
         toast({
           title: 'PIN incorrect',

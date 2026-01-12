@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import CourseBlock from "./CourseBlock";
-import type { TimeGridProps } from "@/types/schedule";
+import type { TimeGridProps, Course } from "@/types/schedule";
 import { HOUR_HEIGHT_PX } from "@/constants/schedule";
 import { parseHHmmToDate, parseHHmmToMinutes } from "@/utils/dateHelpers";
 import { PositionedCourse } from "@/types/types";
@@ -19,7 +19,7 @@ function isOverlap(aStart: number, aEnd: number, bStart: number, bEnd: number) {
   return aStart < bEnd && bStart < aEnd;
 }
 
-function assignColumns(courses: any[], dayStartMinutes: number): PositionedCourse[] {
+function assignColumns(courses: Course[], dayStartMinutes: number): PositionedCourse[] {
   // FIX: use start/end (english keys) everywhere
   const items = courses.map((c) => {
     const startMin = parseHHmmToMinutes(c.start);

@@ -176,7 +176,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     res.status(200).send(icsContent);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`[ICAL_GENERATION_ERROR] User: ${user}`, error);
     res.status(500).json({ 
         error: "Erreur lors de la génération du calendrier.",

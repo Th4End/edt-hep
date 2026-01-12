@@ -18,6 +18,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
       const saved = typeof window !== 'undefined' ? window.localStorage.getItem(storageKey) : null;
       setDoNotShowAgain(saved === 'true');
     } catch {
+      // Erreur de localStorage ignorée
     }
   }, [storageKey]);
 
@@ -52,6 +53,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
         window.localStorage.setItem(storageKey, checked ? 'true' : 'false');
       }
     } catch {
+      // Erreur de localStorage ignorée
     }
   };
 

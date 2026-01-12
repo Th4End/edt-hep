@@ -48,8 +48,8 @@ export const hexToHsl = (hexInput: string): Hsl => {
  * Convertit HSL en hex (#rrggbb).
  */
 export const hslToHex = (h: number, s: number, l: number): string => {
-  let sat = s / 100;
-  let lig = l / 100;
+  const sat = s / 100;
+  const lig = l / 100;
 
   const k = (n: number) => (n + h / 30) % 12;
   const a = sat * Math.min(lig, 1 - lig);

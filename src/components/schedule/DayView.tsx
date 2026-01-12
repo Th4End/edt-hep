@@ -1,7 +1,7 @@
 // components/schedule/DayView.tsx
 import { useEffect, useState } from "react";
 import { Clock, User, ChevronLeft, ChevronRight } from "lucide-react"; // MapPin supprimé car remplacé par les emojis
-import type { DayViewProps } from "@/types/schedule";
+import type { DayViewProps, Course } from "@/types/schedule";
 import { HOURS, HOUR_HEIGHT_PX, DAY_START_MINUTES } from "@/constants/schedule";
 import CourseModal from "@/components/schedule/CourseModal";
 import { cn } from "@/lib/utils";
@@ -48,10 +48,10 @@ const DayView = ({ day, isToday, onPreviousDay, onNextDay }: DayViewProps) => {
   });
 
   // Gestion de la modale
-  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openCourse = (course: any) => {
+  const openCourse = (course: Course) => {
     setSelectedCourse(course);
     setIsModalOpen(true);
   };
