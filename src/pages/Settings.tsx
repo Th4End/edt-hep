@@ -185,7 +185,7 @@ const Settings = () => {
       </div>
 
 
-      <Accordion type="multiple" defaultValue={["appearance", "preferences", "shortcuts", "local-data", "account"]} className="w-full space-y-4">
+      <Accordion type="multiple" defaultValue={[]} className="w-full space-y-4">
         {/* Appearance Section */}
         <AccordionItem value="appearance" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold mb-4">Apparence</AccordionTrigger>
