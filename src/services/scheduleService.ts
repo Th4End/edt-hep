@@ -107,14 +107,13 @@ const parseICalData = (icalData: string, weekOffset: number, sourceName: string)
 
     const coursesByDay: { [key: string]: Course[] } = {};
 
-    vevents.forEach((vevent: any) => {
+    vevents.forEach((vevent: ICAL.Component) => {
         const event = new ICAL.Event(vevent);
         const dtstart = event.startDate.toJSDate();
 
         if (dtstart >= weekStart && dtstart < weekEnd) {
             const dayOfWeek = dtstart.getDay();
             const dayName = dayOfWeekMap[dayOfWeek];
-            const date = dtstart.toISOString().split("T")[0];
 
             if (!coursesByDay[dayName]) {
                 coursesByDay[dayName] = [];
@@ -151,7 +150,7 @@ export const fetchSchedule = async (
   if (!isStringDotString(username)) return [];
 
   const workingDays = getWorkingDays(dateInput ?? null);
-  const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+  const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
   const schedule = await Promise.all(
     workingDays.map(async (date, i) => {
@@ -161,9 +160,9 @@ export const fetchSchedule = async (
 
       try {
         const { data } = await axios.get<string>(url);
-        return { day: daysOfWeek[i], date, courses: parseHtmlDay(data) };
+        return { day: daysOfWeek[i] || "", date, courses: parseHtmlDay(data) };
       } catch {
-        return { day: daysOfWeek[i], date, courses: [] };
+        return { day: daysOfWeek[i] || "", date, courses: [] };
       }
     })
   );

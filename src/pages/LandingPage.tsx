@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useScroll, useTransform, MotionConfig, type Variants } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
-import { CheckCircle, Smartphone, Grid3x3, Palette, Clock, Shield, ChevronDown } from "lucide-react";
+import { CheckCircle, Smartphone, Grid3x3, Palette, Clock, Shield, ChevronDown, Calendar } from "lucide-react";
 
 
 export default function LandingPage() {
@@ -409,6 +409,7 @@ function Features() {
   const features = [
     { icon: CheckCircle, title: "Vue grille & liste", desc: "Adaptée selon l’appareil pour toujours être lisible." },
     { icon: Clock, title: "Mises à jour automatiques", desc: "Synchronisé avec le site officiel HEP." },
+    { icon: Calendar, title: "Synchronisation iCal", desc: "Abonnez-vous à votre emploi du temps et intégrez-le directement dans votre calendrier personnel." },
     { icon: Shield, title: "Respect de la confidentialité", desc: "Aucune donnée personnelle stockée sans consentement." },
   ];
   return (
