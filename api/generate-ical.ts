@@ -122,17 +122,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     cal.updatePropertyWithValue("calscale", "GREGORIAN");
     cal.updatePropertyWithValue("name", `EDT ${user}`);
     cal.updatePropertyWithValue("x-wr-calname", `EDT ${user}`);
-    // Rafraîchissement suggéré toutes les 2 heures
-    cal.updatePropertyWithValue("refresh-interval", "PT1H");
-    cal.updatePropertyWithValue("x-published-ttl", "PT1H");
+    cal.updatePropertyWithValue("refresh-interval", "PT5M");
+    cal.updatePropertyWithValue("x-published-ttl", "PT5M");
 
     courses.forEach(course => {
       try {
         // Création de l'événement
         const vevent = new ICAL.Component("vevent");
         const event = new ICAL.Event(vevent);
-
-        // --- GESTION DU TEMPS CORRIGÉE ---
         const [year, month, day] = course.date.split('-').map(Number);
         const [startHour, startMinute] = course.start.split(':').map(Number);
         const [endHour, endMinute] = course.end.split(':').map(Number);
