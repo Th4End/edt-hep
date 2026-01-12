@@ -133,16 +133,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const event = new ICAL.Event(vevent);
 
         // --- GESTION DU TEMPS CORRIGÉE ---
+        const [year, month, day] = course.date.split('-').map(Number);
         const [startHour, startMinute] = course.start.split(':').map(Number);
         const [endHour, endMinute] = course.end.split(':').map(Number);
-        const startDate = new Date(course.date);
-        startDate.setUTCHours(startHour, startMinute, 0, 0);
-        const endDate = new Date(course.date);
-        endDate.setUTCHours(endHour, endMinute, 0, 0);
 
         event.summary = course.subject;
-        event.startDate = ICAL.Time.fromJSDate(startDate, true);
-        event.endDate = ICAL.Time.fromJSDate(endDate, true);
+        event.startDate = ICAL.Time.fromData({
+            year: year,
+            month: month,
+            day: day,
+            hour: startHour,
+            minute: startMinute,
+            second: 0
+        });
+        event.endDate = ICAL.Time.fromData({
+            year: year,
+            month: month,
+            day: day,
+            hour: endHour,
+            minute: endMinute,
+            second: 0
+        });
         
         if (course.room) event.location = course.room;
         if (course.teacher) event.description = `Enseignant: ${course.teacher}`;
