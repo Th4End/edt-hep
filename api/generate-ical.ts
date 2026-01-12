@@ -130,27 +130,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Création de l'événement
         const vevent = new ICAL.Component("vevent");
         const event = new ICAL.Event(vevent);
-        const [year, month, day] = course.date.split('-').map(Number);
-        const [startHour, startMinute] = course.start.split(':').map(Number);
-        const [endHour, endMinute] = course.end.split(':').map(Number);
+        const startStr = `${course.date}T${course.start}:00`;
+        const endStr = `${course.date}T${course.end}:00`;
+
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
 
         event.summary = course.subject;
-        event.startDate = ICAL.Time.fromData({
-            year: year,
-            month: month,
-            day: day,
-            hour: startHour,
-            minute: startMinute,
-            second: 0
-        });
-        event.endDate = ICAL.Time.fromData({
-            year: year,
-            month: month,
-            day: day,
-            hour: endHour,
-            minute: endMinute,
-            second: 0
-        });
+        event.startDate = ICAL.Time.fromJSDate(startDate);
+        event.endDate = ICAL.Time.fromJSDate(endDate);
         
         if (course.room) event.location = course.room;
         if (course.teacher) event.description = `Enseignant: ${course.teacher}`;
