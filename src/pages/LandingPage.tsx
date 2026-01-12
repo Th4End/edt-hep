@@ -409,6 +409,7 @@ function Features() {
   const features = [
     { icon: CheckCircle, title: "Vue grille & liste", desc: "Adaptée selon l’appareil pour toujours être lisible." },
     { icon: Clock, title: "Mises à jour automatiques", desc: "Synchronisé avec le site officiel HEP." },
+    { icon: CalendarDays, title: "Synchronisation iCal", desc: "Abonnez-vous à votre emploi du temps et intégrez-le directement dans votre calendrier personnel." },
     { icon: Shield, title: "Respect de la confidentialité", desc: "Aucune donnée personnelle stockée sans consentement." },
   ];
   return (
