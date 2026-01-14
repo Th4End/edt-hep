@@ -175,10 +175,12 @@ const Settings = () => {
       transition={{ duration: 0.4 }}
       className="container mx-auto px-4 py-6 max-w-2xl"
     >
-      <div className="flex items-center justify-between mb-8">
-        <Button variant="ghost" onClick={() => navigate("/calendar")} className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-8"> 
+        <Button variant="ghost" onClick={() => navigate("/calendar")} className="flex items-center gap-2 bg-card p-4 rounded-2xl shadow-soft border border-border/50"> 
           <ChevronLeft className="w-5 h-5" />
-          Retour à l'emploi du temps
+          <span className="hidden sm:inline">
+            Retour à l'emploi du temps
+          </span>
         </Button>
         <h1 className="text-3xl font-bold">Paramètres</h1>
         <div className="w-[180px]"> {/* Spacer to balance header */}</div>
