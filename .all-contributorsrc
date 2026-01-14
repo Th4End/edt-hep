@@ -29,6 +29,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "TristanSalinas",
+      "name": "Tristan Salinas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/152698682?v=4",
+      "profile": "https://github.com/TristanSalinas",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "commitType": "docs",
