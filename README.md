@@ -104,7 +104,7 @@ Merci à toutes les personnes qui ont contribué à ce projet !
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/D-Seonay"><img src="https://avatars.githubusercontent.com/u/102633055?v=4?s=100" width="100px;" alt="Mathéo DELAUNAY"/><br /><sub><b>Mathéo DELAUNAY</b></sub></a><br /><a href="https://github.com/D-Seonay/edt-hep/commits?author=D-Seonay" title="Code">💻</a> <a href="#maintenance-D-Seonay" title="Maintenance">🚧</a> <a href="https://github.com/D-Seonay/edt-hep/commits?author=D-Seonay" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/D-Seonay"><img src="https://avatars.githubusercontent.com/u/91608025?v=4" width="100px;" alt="Mathéo DELAUNAY"/><br /><sub><b>Mathéo DELAUNAY</b></sub></a><br /><a href="https://github.com/D-Seonay/edt-hep/commits?author=D-Seonay" title="Code">💻</a> <a href="#maintenance-D-Seonay" title="Maintenance">🚧</a> <a href="https://github.com/D-Seonay/edt-hep/commits?author=D-Seonay" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
