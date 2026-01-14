@@ -182,7 +182,7 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
         <>
           {/* Header cliquable */}
           <div className="hidden md:block">
-            <div className={`grid grid-cols-[80px_repeat(${workingDays.length},1fr)] border-b border-border/50 bg-muted/30`}>
+            <div className="grid border-b border-border/50 bg-muted/30" style={{ gridTemplateColumns: `80px repeat(${workingDays.length}, 1fr)` }}>
               <div className="p-4 border-r border-border/50" />
               {workingDays.map((day) => {
                 const dayData = schedule.find((d) => d.day === day);
@@ -212,7 +212,7 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
             </div>
 
             {/* Grille horaire */}
-            <div className={`grid grid-cols-[80px_repeat(${workingDays.length},1fr)] relative`}>
+            <div className="grid relative" style={{ gridTemplateColumns: `80px repeat(${workingDays.length}, 1fr)` }}>
               {/* Colonne heures */}
               <div className="border-r border-border/50">
                 {displayHours.map((hour) => (
