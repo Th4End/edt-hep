@@ -1,0 +1,18 @@
+{
+  "projectName": "D-Seonay/edt-hep",
+  "projectOwner": "D-Seonay",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": ["README.md"],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "D-Seonay",
+      "name": "Mathéo DELAUNAY",
+      "avatar_url": "https://avatars.githubusercontent.com/u/102633055?v=4",
+      "profile": "https://github.com/D-Seonay",
+      "contributions": ["code", "maintenance", "doc"]
+    }
+  ]
+}
