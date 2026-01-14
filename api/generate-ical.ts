@@ -23,16 +23,20 @@ const isStringDotString = (input: string): boolean => {
 
 const getDatesForWeeks = (numWeeks: number): string[] => {
   const dates: string[] = [];
-  const currentDate = new Date();
+  const today = new Date();
   
-  // On commence au début de la semaine courante pour être sûr d'avoir le contexte
-  const dayOfWeek = currentDate.getDay(); // 0 (Dim) - 6 (Sam)
-  const diff = currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Ajuster au Lundi
-  currentDate.setDate(diff);
+  // Start of today, UTC, to prevent timezone offsets
+  const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+
+  const dayOfWeek = startOfToday.getUTCDay(); // 0 (Sun) - 6 (Sat)
+  const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust to Monday
+  
+  const monday = new Date(startOfToday);
+  monday.setUTCDate(startOfToday.getUTCDate() + diff);
 
   for (let i = 0; i < numWeeks * 7; i++) {
-    const d = new Date(currentDate);
-    d.setDate(d.getDate() + i);
+    const d = new Date(monday);
+    d.setUTCDate(monday.getUTCDate() + i);
     dates.push(d.toISOString().split('T')[0]);
   }
   return dates;
