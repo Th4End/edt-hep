@@ -1,9 +1,11 @@
 {
-  "projectName": "D-Seonay/edt-hep",
+  "projectName": "edt-hep",
   "projectOwner": "D-Seonay",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "files": ["README.md"],
+  "files": [
+    "README.md"
+  ],
   "imageSize": 100,
   "commit": false,
   "contributors": [
@@ -12,7 +14,24 @@
       "name": "Mathéo DELAUNAY",
       "avatar_url": "https://avatars.githubusercontent.com/u/102633055?v=4",
       "profile": "https://github.com/D-Seonay",
-      "contributions": ["code", "maintenance", "doc"]
+      "contributions": [
+        "code",
+        "maintenance",
+        "doc"
+      ]
+    },
+    {
+      "login": "Many0nne",
+      "name": "Terry Barillon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/97261063?v=4",
+      "profile": "https://github.com/Many0nne",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
-  ]
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7
 }
