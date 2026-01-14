@@ -26,32 +26,36 @@ const assignColors = (schedule: Day[]): Day[] => {
 };
 
 function getWorkingDays(dateInput?: string | number | null): string[] {
-    const currentDate = new Date();
-
+    const today = new Date();
+    
     let weeksToAdd = 0;
     if (typeof dateInput === "string" && /^-?\d+$/.test(dateInput)) {
         weeksToAdd = parseInt(dateInput, 10);
     } else if (typeof dateInput === "number") {
         weeksToAdd = dateInput;
     }
-
+    
     if (weeksToAdd !== 0) {
-        currentDate.setDate(currentDate.getDate() + weeksToAdd * 7);
+      today.setDate(today.getDate() + weeksToAdd * 7);
     }
 
-    const dayOfWeek = currentDate.getDay();
-    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(currentDate);
-    monday.setDate(currentDate.getDate() + diffToMonday);
+    // Start of day, UTC, to prevent timezone offsets
+    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
-    const workingDays: Date[] = [];
+    const dayOfWeek = startOfToday.getUTCDay(); // 0 (Sun) - 6 (Sat)
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust to Monday
+    
+    const monday = new Date(startOfToday);
+    monday.setUTCDate(startOfToday.getUTCDate() + diffToMonday);
+
+    const workingDays: string[] = [];
     for (let i = 0; i < 7; i++) {
         const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        workingDays.push(d);
+        d.setUTCDate(monday.getUTCDate() + i);
+        workingDays.push(d.toISOString().split("T")[0]);
     }
 
-    return workingDays.map((d) => d.toISOString().split("T")[0]);
+    return workingDays;
 }
 
 const parseHtmlDay = (html: string): Course[] => {
