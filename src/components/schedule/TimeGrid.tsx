@@ -118,7 +118,12 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
   const [now, setNow] = useState<Date>(new Date());
   const [displayHours, setDisplayHours] = useState<string[]>([]);
   const dayStartMinutes = useMemo(() => parseHHmmToMinutes(displayHours[0] || "08:00"), [displayHours]);
-  const workingDays: string[] = useMemo(() => JSON.parse(localStorage.getItem("workingDays") || '["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]'), []);
+  const workingDays: string[] = useMemo(() => {
+    const dayOrder = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    const savedDays: string[] = JSON.parse(localStorage.getItem("workingDays") || '["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]');
+    
+    return savedDays.sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b));
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 30000);
