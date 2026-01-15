@@ -7,8 +7,8 @@ const SubjectFilter = ({
   subjects,
   selectedSubjects,
   onToggle,
-  filterDistanciel,
-  onToggleDistanciel,
+  remoteFilter,
+  onToggleRemote,
   defaultOpen = false,
 }: SubjectFilterProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
@@ -58,8 +58,8 @@ const SubjectFilter = ({
           <div className="flex items-center space-x-2 pb-2 border-b border-border">
             <Checkbox
               id="distanciel"
-              checked={filterDistanciel}
-              onCheckedChange={onToggleDistanciel}
+              checked={remoteFilter}
+              onCheckedChange={onToggleRemote}
             />
             <label
               htmlFor="distanciel"
