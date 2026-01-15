@@ -1,10 +1,16 @@
 {
-
+    "matheo.delaunay": {
+    "ad": {
+        "title": "🔥 T'a pas pris de vacances ?",
+        "description": "Viens skier avec moi cet hiver dans les hautes pyrénées ! ⛷️",
+        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.WAtPksqSG-bHlwQaH5UaawHaEK%3Fpid%3DApi&f=1&ipt=3dc8fe36e21f5079f4d028499651454cbf72bf1186c4371a562591d95650f02c&ipo=images"
+    }
+    },
     "alban.mary": {
     "ad": {
-        "title": "🔥 Cette semaine c'est curry",
-        "description": "Curry de poulet au lait de coco et riz basmati ou à la japonnais ! 🍛",
-        "image": "/img/ads/curry.png"
+        "title": "🔥 Cette semaine c'est poulet bite !",
+        "description": "Curry de poulet bite au lait de coco et riz basmati ou à la japonnais ! 🍛",
+        "image": "/img/ads/poulet-bite.png"
     }
     },
     "terry.barillon": {

@@ -256,15 +256,18 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
                     {/* Barre “maintenant” */}
                     {nowTop !== null && nowTop >= 0 && (
                       <div
-                        className="absolute left-0 right-0 pointer-events-none"
+                        className="absolute left-0 right-0 pointer-events-none z-10"
                         style={{
                           top: `${Math.min(nowTop, displayHours.length * HOUR_HEIGHT_PX)}px`,
                         }}
                       >
-                        {/* ligne */}
-                        <div className="h-px bg-red-500/80" />
-                        {/* petit marqueur à gauche */}
-                        <div className="w-2 h-2 bg-red-500 rounded-full mt-[-4px] ml-[-1px]" />
+                        {/* svg: ligne uniquement (point en HTML pour taille fixe) */}
+                        <svg width="100%" height="8" viewBox="0 0 100 8" preserveAspectRatio="none" className="block">
+                          <line x1="0" y1="4" x2="100" y2="4" stroke="rgba(239,68,68,0.8)" strokeWidth="1" />
+                        </svg>
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none ml-[-1px]">
+                          <div className="w-2 h-2 bg-red-500 rounded-full" />
+                        </div>
                       </div>
                     )}
 
@@ -278,6 +281,10 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
                       const isPast =
                         dayData?.date ? parseHHmmToDate(pc.course, dayData.date, now) : false;
 
+                      const innerWidth = colCount > 1
+                        ? `calc(100% - ${colGapPx}px)`
+                        : `calc(100% - ${GRID_PADDING_X * 2}px)`;
+
                       return (
                         <div
                           key={idx}
@@ -285,24 +292,36 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
                           style={{
                             top: `${pc.top}px`,
                             height: `${pc.height}px`,
-                            left: `calc(${leftPercent}% + ${GRID_PADDING_X}px)`,
-                            width: `calc(${widthPercent}% - ${colGapPx}px - ${GRID_PADDING_X * 2}px)`,
+                            left: `${leftPercent}%`,
+                            width: `${widthPercent}%`,
                             // dim léger si passé
                             opacity: isPast ? 0.55 : 1,
                             filter: isPast ? "saturate(0.85)" : "none",
                           }}
                         >
-                          <CourseBlock
-                            course={pc.course}
-                            viewMode="week"
+                          <div
                             style={{
+                              padding: `${GRID_PADDING_X}px`,
+                              boxSizing: "border-box",
                               height: "100%",
-                              overflow: "hidden",
-                              borderRadius: 10,
                               display: "flex",
-                              flexDirection: "column",
+                              justifyContent: "center",
                             }}
-                          />
+                          >
+                            <div style={{ width: innerWidth, height: "100%" }}>
+                              <CourseBlock
+                                course={pc.course}
+                                viewMode="week"
+                                style={{
+                                  height: "100%",
+                                  overflow: "hidden",
+                                  borderRadius: 10,
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              />
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
@@ -331,8 +350,12 @@ const TimeGrid = ({ schedule, currentDate = new Date(), onSelectDay }: TimeGridP
                         top: `${Math.min(nowTop, displayHours.length * HOUR_HEIGHT_PX)}px`,
                       }}
                     >
-                      <div className="h-px bg-red-500/80" />
-                      <div className="w-2 h-2 bg-red-500 rounded-full mt-[-4px]" />
+                      <svg width="100%" height="8" viewBox="0 0 100 8" preserveAspectRatio="none" className="block">
+                        <line x1="0" y1="4" x2="100" y2="4" stroke="rgba(239,68,68,0.8)" strokeWidth="1" />
+                      </svg>
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none ml-[-1px]">
+                        <div className="w-2 h-2 bg-red-500 rounded-full" />
+                      </div>
                     </div>
                   )}
 

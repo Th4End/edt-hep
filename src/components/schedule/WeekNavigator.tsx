@@ -26,7 +26,7 @@ const WeekNavigator = ({
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 flex-wrap">
+    <div className="flex items-center gap-4 flex-wrap">
       {/* Navigation */}
       <div className="flex items-center gap-2">
         <Button
