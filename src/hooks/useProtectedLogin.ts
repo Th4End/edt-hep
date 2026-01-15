@@ -141,9 +141,13 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
     });
 
     localStorage.setItem('hasVisited', 'true');
-    setInfoOpen(true);
+    if (localStorage.getItem('infoModal:hidden') !== 'true') {
+      setInfoOpen(true);
+    } else {
+      navigate('/calendar');
+    }
     setIsLoading(false);
-  }, [pin]);
+  }, [pin, navigate]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,7 +213,11 @@ export const useProtectedLogin = (): UseProtectedLoginReturn => {
     });
 
     localStorage.setItem('hasVisited', 'true');
-    setInfoOpen(true);
+    if (localStorage.getItem('infoModal:hidden') !== 'true') {
+      setInfoOpen(true);
+    } else {
+      navigate('/calendar');
+    }
   }, [username, needsPin, pin, navigate]);
 
   return {

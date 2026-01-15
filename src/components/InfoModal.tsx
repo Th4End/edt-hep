@@ -11,31 +11,22 @@ export const InfoModal: React.FC<InfoModalProps> = ({
   storageKey = 'infoModal:hidden',
 }) => {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const [doNotShowAgain, setDoNotShowAgain] = useState<boolean>(false);
-
-  useEffect(() => {
+  const [isChecked, setIsChecked] = useState(() => {
     try {
-      const saved = typeof window !== 'undefined' ? window.localStorage.getItem(storageKey) : null;
-      setDoNotShowAgain(saved === 'true');
+      return window.localStorage.getItem(storageKey) === 'true';
     } catch {
-      // Erreur de localStorage ignorée
+      return false;
     }
-  }, [storageKey]);
+  });
 
   useEffect(() => {
-    if (open && doNotShowAgain) {
-      onClose();
-    }
-  }, [open, doNotShowAgain, onClose]);
-
-  useEffect(() => {
-    if (open && !doNotShowAgain) {
+    if (open) {
       const id = setTimeout(() => {
         closeBtnRef.current?.focus();
       }, 50);
       return () => clearTimeout(id);
     }
-  }, [open, doNotShowAgain]);
+  }, [open]);
 
   const onBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     onClose();
@@ -46,20 +37,19 @@ export const InfoModal: React.FC<InfoModalProps> = ({
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setDoNotShowAgain(checked);
+    setIsChecked(e.target.checked);
+  };
+
+  const handleConfirm = () => {
     try {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(storageKey, checked ? 'true' : 'false');
-      }
-    } catch {
-      // Erreur de localStorage ignorée
-    }
+      window.localStorage.setItem(storageKey, String(isChecked));
+    } catch {}
+    onClose();
   };
 
   return (
     <AnimatePresence>
-      {open && !doNotShowAgain && (
+      {open && (
         <motion.div
           key="backdrop"
           className="fixed inset-0 z-[1000] flex items-center justify-center"
@@ -116,7 +106,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
                 <input
                   type="checkbox"
                   className="h-4 w-4 rounded border border-white/40 dark:border-white/20 bg-white/30 dark:bg-white/10"
-                  checked={doNotShowAgain}
+                  checked={isChecked}
                   onChange={handleCheckboxChange}
                   aria-label="Ne plus afficher ce message"
                 />
@@ -127,7 +117,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
                 <button
                   ref={closeBtnRef}
                   type="button"
-                  onClick={onClose}
+                  onClick={handleConfirm}
                   className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium
                              border border-white/40 dark:border-white/20
                              bg-white/30 dark:bg-white/10
@@ -160,5 +150,6 @@ export const InfoModal: React.FC<InfoModalProps> = ({
     </AnimatePresence>
   );
 };
+
 
 export default InfoModal;
