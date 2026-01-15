@@ -66,7 +66,7 @@ const Calendar = () => {
   const [selectedSources, setSelectedSources] = useState<Set<string>>(
     new Set()
   );
-  const [filterDistanciel, setFilterDistanciel] = useState(false);
+  const [remoteFilter, setRemoteFilter] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"week" | "day" | "month">("week");
@@ -233,11 +233,11 @@ const Calendar = () => {
           const matchSubject = selectedSubjects.has(course.subject);
           const matchSource = course.source ? selectedSources.has(course.source) : true;
           const matchDistanciel =
-            !filterDistanciel || course.room.startsWith("SALLE");
+            !remoteFilter || course.room.startsWith("SALLE");
           return matchSubject && matchSource && matchDistanciel;
         }) ?? [],
       }));
-  }, [schedule, selectedSubjects, selectedSources, filterDistanciel]);
+  }, [schedule, selectedSubjects, selectedSources, remoteFilter]);
 
   useEffect(() => {
     if (viewMode === "day") {
@@ -581,9 +581,9 @@ const Calendar = () => {
                 subjects={subjects}
                 selectedSubjects={selectedSubjects}
                 onToggle={handleSubjectToggle}
-                filterDistanciel={filterDistanciel}
-                onToggleDistanciel={() => {
-                  setFilterDistanciel((v) => !v);
+                remoteFilter={remoteFilter}
+                onToggleRemote={() => {
+                  setRemoteFilter((v) => !v);
                 }}
               />
             )}
