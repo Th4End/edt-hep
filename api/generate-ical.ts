@@ -99,64 +99,156 @@ const createStableUID = (course: Course, user: string): string => {
   return hash.digest('hex') + "@edt-hep.vercel.app";
 };
 
+const getParisTimezoneComponent = (): ICAL.Component => {
+  const vtimezone = new ICAL.Component('vtimezone');
+  vtimezone.addPropertyWithValue('tzid', 'Europe/Paris');
+  vtimezone.addPropertyWithValue('x-lic-location', 'Europe/Paris');
+
+  const standard = new ICAL.Component('standard');
+  standard.addPropertyWithValue('dtstart', new ICAL.Time({ year: 1970, month: 10, day: 25, hour: 3, minute: 0, second: 0, isDate: false }));
+  standard.addPropertyWithValue('rrule', 'FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10');
+  standard.addPropertyWithValue('tzoffsetfrom', '+0200');
+  standard.addPropertyWithValue('tzoffsetto', '+0100');
+  standard.addPropertyWithValue('tzname', 'CET');
+
+  const daylight = new ICAL.Component('daylight');
+  daylight.addPropertyWithValue('dtstart', new ICAL.Time({ year: 1970, month: 3, day: 29, hour: 2, minute: 0, second: 0, isDate: false }));
+  daylight.addPropertyWithValue('rrule', 'FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3');
+  daylight.addPropertyWithValue('tzoffsetfrom', '+0100');
+  daylight.addPropertyWithValue('tzoffsetto', '+0200');
+  daylight.addPropertyWithValue('tzname', 'CEST');
+
+  vtimezone.addSubcomponent(standard);
+  vtimezone.addSubcomponent(daylight);
+
+  return vtimezone;
+}
+
+
+
 // --- API Handler ---
 
+
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+
   const { user } = req.query;
 
+
+
   if (typeof user !== "string" || !isStringDotString(user)) {
+
     return res.status(400).json({ error: "Paramètre 'user' invalide. Format attendu: prenom.nom" });
+
   }
 
+
+
   try {
+
     // 1. Récupération des dates (Réduit à 4 semaines pour performance Vercel, ou garder 8 si rapide)
+
     const datesToFetch = getDatesForWeeks(8);
+
     
+
     // 2. Fetch en parallèle
+
     const htmlPromises = datesToFetch.map(date => fetchDayHtml(user, date));
+
     const htmlResults = await Promise.all(htmlPromises);
 
+
+
     // 3. Parsing
+
     const courses = htmlResults.flatMap((html, i) => parseHtmlDayNode(html, datesToFetch[i]));
 
+
+
     // 4. Création iCal
+
     const cal = new ICAL.Component("vcalendar");
-    cal.updatePropertyWithValue("prodid", "-//Edt-Hep//Schedule//FR");
-    cal.updatePropertyWithValue("version", "2.0");
-    cal.updatePropertyWithValue("calscale", "GREGORIAN");
-    cal.updatePropertyWithValue("name", `EDT ${user}`);
-    cal.updatePropertyWithValue("x-wr-calname", `EDT ${user}`);
-    cal.updatePropertyWithValue("refresh-interval", "PT5M");
-    cal.updatePropertyWithValue("x-published-ttl", "PT5M");
+
+    cal.addPropertyWithValue("prodid", "-//Edt-Hep//Schedule//FR");
+
+    cal.addPropertyWithValue("version", "2.0");
+
+    cal.addPropertyWithValue("calscale", "GREGORIAN");
+
+    cal.addPropertyWithValue("name", `EDT ${user}`);
+
+    cal.addPropertyWithValue("x-wr-calname", `EDT ${user}`);
+
+    cal.addPropertyWithValue("refresh-interval", "PT5M");
+
+    cal.addPropertyWithValue("x-published-ttl", "PT5M");
+
+
+
+    // Add timezone component
+
+    cal.addSubcomponent(getParisTimezoneComponent());
+
+
 
     courses.forEach(course => {
+
       try {
-        // Création de l'événement
+
         const vevent = new ICAL.Component("vevent");
-        const event = new ICAL.Event(vevent);
-        const startStr = `${course.date}T${course.start}:00`;
-        const endStr = `${course.date}T${course.end}:00`;
 
-        const startDate = new Date(startStr);
-        const endDate = new Date(endStr);
+        vevent.addPropertyWithValue('summary', course.subject);
 
-        event.summary = course.subject;
-        event.startDate = ICAL.Time.fromJSDate(startDate);
-        event.endDate = ICAL.Time.fromJSDate(endDate);
+        vevent.addPropertyWithValue('uid', createStableUID(course, user));
+
+
+
+        const startStr = `${course.date.replace(/-/g, '')}T${course.start.replace(/:/g, '')}00`;
+
+        const endStr = `${course.date.replace(/-/g, '')}T${course.end.replace(/:/g, '')}00`;
+
+
+
+        const dtstart = vevent.addPropertyWithValue('dtstart', startStr);
+
+        dtstart.setParameter('tzid', 'Europe/Paris');
+
+
+
+        const dtend = vevent.addPropertyWithValue('dtend', endStr);
+
+        dtend.setParameter('tzid', 'Europe/Paris');
+
         
-        if (course.room) event.location = course.room;
-        if (course.teacher) event.description = `Enseignant: ${course.teacher}`;
-        if (course.room) event.description = `${event.description ? event.description + '\n' : ''}Salle: ${course.room}`;
+
+        let description = "";
+
+        if (course.teacher) description += `Enseignant: ${course.teacher}`;
+
+        if (course.room) description += `${description ? '\n' : ''}Salle: ${course.room}`;
+
+        if (description) vevent.addPropertyWithValue('description', description);
+
         
-        event.uid = createStableUID(course, user);
+
+        if (course.room) vevent.addPropertyWithValue('location', course.room);
+
         
-        // CORRECTION MAJEURE ICI : on ajoute le sous-composant, pas l'objet event wrapper
+
         cal.addSubcomponent(vevent);
 
+
+
       } catch (e) {
+
         console.error(`[ICAL_EVENT_ERROR] Erreur sur cours:`, course, e);
+
       }
+
     });
+
+
 
     // 5. Réponse
     const icsContent = cal.toString();
