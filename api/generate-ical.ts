@@ -105,15 +105,43 @@ const getParisTimezoneComponent = (): ICAL.Component => {
   vtimezone.addPropertyWithValue('x-lic-location', 'Europe/Paris');
 
   const standard = new ICAL.Component('standard');
-  standard.addPropertyWithValue('dtstart', new ICAL.Time({ year: 1970, month: 10, day: 25, hour: 3, minute: 0, second: 0, isDate: false }));
-  standard.addPropertyWithValue('rrule', 'FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10');
+  const standardStart = new ICAL.Time({
+    year: 1970,
+    month: 10,
+    day: 25,
+    hour: 3,
+    minute: 0,
+    second: 0,
+    isDate: false
+  }, null as any); // Cast 'as any' pour calmer TypeScript
+
+  standard.addPropertyWithValue('dtstart', standardStart);
+  standard.addPropertyWithValue('rrule', new ICAL.Recur({ 
+      freq: 'YEARLY', 
+      byday: ['-1SU'], 
+      bymonth: [10]    
+  }));
   standard.addPropertyWithValue('tzoffsetfrom', '+0200');
   standard.addPropertyWithValue('tzoffsetto', '+0100');
   standard.addPropertyWithValue('tzname', 'CET');
 
   const daylight = new ICAL.Component('daylight');
-  daylight.addPropertyWithValue('dtstart', new ICAL.Time({ year: 1970, month: 3, day: 29, hour: 2, minute: 0, second: 0, isDate: false }));
-  daylight.addPropertyWithValue('rrule', 'FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3');
+  const daylightStart = new ICAL.Time({
+    year: 1970,
+    month: 3,
+    day: 29,
+    hour: 2,
+    minute: 0,
+    second: 0,
+    isDate: false
+  }, null as any); // <-- Correction ici : parenthèse fermée + cast
+
+  daylight.addPropertyWithValue('dtstart', daylightStart);
+  daylight.addPropertyWithValue('rrule', new ICAL.Recur({ 
+      freq: 'YEARLY', 
+      byday: ['-1SU'], 
+      bymonth: [3]     
+  }));
   daylight.addPropertyWithValue('tzoffsetfrom', '+0100');
   daylight.addPropertyWithValue('tzoffsetto', '+0200');
   daylight.addPropertyWithValue('tzname', 'CEST');
