@@ -99,61 +99,6 @@ const createStableUID = (course: Course, user: string): string => {
   return hash.digest('hex') + "@edt-hep.vercel.app";
 };
 
-const getParisTimezoneComponent = (): ICAL.Component => {
-  const vtimezone = new ICAL.Component('vtimezone');
-  vtimezone.addPropertyWithValue('tzid', 'Europe/Paris');
-  vtimezone.addPropertyWithValue('x-lic-location', 'Europe/Paris');
-
-  const standard = new ICAL.Component('standard');
-  const standardStart = new ICAL.Time({
-    year: 1970,
-    month: 10,
-    day: 25,
-    hour: 3,
-    minute: 0,
-    second: 0,
-    isDate: false
-  }, null as any); // Cast 'as any' pour calmer TypeScript
-
-  standard.addPropertyWithValue('dtstart', standardStart);
-  standard.addPropertyWithValue('rrule', new ICAL.Recur({ 
-      freq: 'YEARLY', 
-      byday: ['-1SU'], 
-      bymonth: [10]    
-  }));
-  standard.addPropertyWithValue('tzoffsetfrom', '+0200');
-  standard.addPropertyWithValue('tzoffsetto', '+0100');
-  standard.addPropertyWithValue('tzname', 'CET');
-
-  const daylight = new ICAL.Component('daylight');
-  const daylightStart = new ICAL.Time({
-    year: 1970,
-    month: 3,
-    day: 29,
-    hour: 2,
-    minute: 0,
-    second: 0,
-    isDate: false
-  }, null as any); // <-- Correction ici : parenthèse fermée + cast
-
-  daylight.addPropertyWithValue('dtstart', daylightStart);
-  daylight.addPropertyWithValue('rrule', new ICAL.Recur({ 
-      freq: 'YEARLY', 
-      byday: ['-1SU'], 
-      bymonth: [3]     
-  }));
-  daylight.addPropertyWithValue('tzoffsetfrom', '+0100');
-  daylight.addPropertyWithValue('tzoffsetto', '+0200');
-  daylight.addPropertyWithValue('tzname', 'CEST');
-
-  vtimezone.addSubcomponent(standard);
-  vtimezone.addSubcomponent(daylight);
-
-  return vtimezone;
-}
-
-
-
 // --- API Handler ---
 
 
@@ -212,61 +157,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     cal.addPropertyWithValue("x-published-ttl", "PT5M");
 
-
-
-    // Add timezone component
-
-    cal.addSubcomponent(getParisTimezoneComponent());
-
-
-
     courses.forEach(course => {
 
       try {
-
         const vevent = new ICAL.Component("vevent");
+        const event = new ICAL.Event(vevent);
 
-        vevent.addPropertyWithValue('summary', course.subject);
-
-        vevent.addPropertyWithValue('uid', createStableUID(course, user));
-
-
-
-        const startStr = `${course.date.replace(/-/g, '')}T${course.start.replace(/:/g, '')}00`;
-
-        const endStr = `${course.date.replace(/-/g, '')}T${course.end.replace(/:/g, '')}00`;
-
-
-
-        const dtstart = vevent.addPropertyWithValue('dtstart', startStr);
-
-        dtstart.setParameter('tzid', 'Europe/Paris');
-
-
-
-        const dtend = vevent.addPropertyWithValue('dtend', endStr);
-
-        dtend.setParameter('tzid', 'Europe/Paris');
-
+        // Manually subtract one hour
+        const startDate = new Date(`${course.date}T${course.start}:00`);
+        startDate.setHours(startDate.getHours() - 1);
         
+        const endDate = new Date(`${course.date}T${course.end}:00`);
+        endDate.setHours(endDate.getHours() - 1);
 
+        event.summary = course.subject;
+        event.startDate = ICAL.Time.fromJSDate(startDate);
+        event.endDate = ICAL.Time.fromJSDate(endDate);
+        
+        if (course.room) event.location = course.room;
         let description = "";
-
         if (course.teacher) description += `Enseignant: ${course.teacher}`;
-
         if (course.room) description += `${description ? '\n' : ''}Salle: ${course.room}`;
+        if (description) event.description = description;
 
-        if (description) vevent.addPropertyWithValue('description', description);
-
+        event.uid = createStableUID(course, user);
         
-
-        if (course.room) vevent.addPropertyWithValue('location', course.room);
-
-        
-
         cal.addSubcomponent(vevent);
-
-
 
       } catch (e) {
 
