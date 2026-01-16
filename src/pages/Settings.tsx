@@ -190,9 +190,9 @@ const Settings = () => {
       <Accordion type="multiple" defaultValue={[]} className="w-full space-y-4">
         {/* Appearance Section */}
         <AccordionItem value="appearance" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Apparence</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Apparence</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="theme-toggle" className="text-base">Thème sombre</Label>
                 <Switch id="theme-toggle" checked={theme === "dark"} onCheckedChange={toggleTheme} />
@@ -211,7 +211,7 @@ const Settings = () => {
         </AccordionItem>
 
         <AccordionItem value="display" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Affichage</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Affichage</AccordionTrigger>
           <AccordionContent>
             <Tabs defaultValue="hours">
               <TabsList>
@@ -219,7 +219,7 @@ const Settings = () => {
                 <TabsTrigger value="days">Jours</TabsTrigger>
               </TabsList>
               <TabsContent value="hours" className="pt-4">
-                <div className="space-y-6">
+                <div className="space-y-6 mt-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="hour-range-toggle" className="text-base">Plage horaire dynamique</Label>
                     <Switch id="hour-range-toggle" checked={hourRangeMode === 'dynamic'} onCheckedChange={(checked) => setHourRangeMode(checked ? 'dynamic' : 'fixed')} />
@@ -252,9 +252,9 @@ const Settings = () => {
 
         {/* Preferences Section */}
         <AccordionItem value="preferences" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Préférences</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Préférences</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="landing-page-toggle" className="text-base">Afficher la page de bienvenue au démarrage</Label>
                 <Switch id="landing-page-toggle" checked={showLandingPage} onCheckedChange={setShowLandingPage} />
@@ -275,9 +275,9 @@ const Settings = () => {
 
         {/* Subscription Section */}
         <AccordionItem value="ical-subscription" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Abonnement à votre emploi du temps</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Abonnement à votre emploi du temps</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
                 <p className="text-sm text-muted-foreground">
                     Utilisez ce lien unique pour vous abonner à votre emploi du temps dans n'importe quelle application de calendrier (Google Calendar, Outlook, Calendrier Apple). Votre calendrier se mettra à jour automatiquement.
                 </p>
@@ -308,9 +308,9 @@ const Settings = () => {
 
         {/* Custom Calendars Section */}
         <AccordionItem value="custom-calendars" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Calendriers personnalisés (iCal)</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Calendriers personnalisés (iCal)</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               {customUrls.map((url, index) => (
                 <div key={index} className="flex items-center justify-between bg-muted/50 p-3 rounded-lg">
                   <div>
@@ -334,9 +334,9 @@ const Settings = () => {
 
         {/* Shortcuts Section */}
         <AccordionItem value="shortcuts" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Raccourcis de nom d'utilisateur</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Raccourcis de nom d'utilisateur</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               {Object.entries(shortcuts).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between bg-muted/50 p-3 rounded-lg">
                   <div>
@@ -360,9 +360,9 @@ const Settings = () => {
 
         {/* Local Data Section */}
         <AccordionItem value="local-data" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Données locales</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Données locales</AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               <p className="text-sm text-muted-foreground">Gérez les données stockées dans votre navigateur.</p>
               <div className="flex items-center justify-between">
                   <h3 className="font-medium">Historique des utilisateurs</h3>
@@ -385,9 +385,9 @@ const Settings = () => {
 
         {/* Account Section (Logout) */}
         <AccordionItem value="account" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
-          <AccordionTrigger className="text-xl font-semibold mb-4">Compte</AccordionTrigger>
+          <AccordionTrigger className="text-xl font-semibold">Compte</AccordionTrigger>
           <AccordionContent>
-            <Button variant="destructive" onClick={handleLogout} className="w-full">
+            <Button variant="destructive" onClick={handleLogout} className="w-full mt-4">
               <LogOut className="w-4 h-4 mr-2" /> Déconnexion
             </Button>
           </AccordionContent>

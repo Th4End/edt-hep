@@ -26,6 +26,7 @@ export * from "../components/ui/dialog";
 export * from "../components/ui/switch";
 export * from "../components/ui/slider";
 export * from "../components/ui/toast";
+export * from "../components/ui/Divider";
 export { default as AdBanner } from "../components/ui/AdBanner";
 export { default as InfoModal } from "../components/InfoModal";
 
