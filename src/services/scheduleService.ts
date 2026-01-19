@@ -162,11 +162,14 @@ export const fetchSchedule = async (
         date
       )}%208:00`;
 
+      const [y, m, d] = date.split('-');
+      const formattedDate = `${d}/${m}/${y}`;
+
       try {
         const { data } = await axios.get<string>(url);
-        return { day: daysOfWeek[i] || "", date, courses: parseHtmlDay(data) };
+        return { day: daysOfWeek[i] || "", date: formattedDate, courses: parseHtmlDay(data) };
       } catch {
-        return { day: daysOfWeek[i] || "", date, courses: [] };
+        return { day: daysOfWeek[i] || "", date: formattedDate, courses: [] };
       }
     })
   );
