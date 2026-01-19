@@ -43,7 +43,9 @@ export const InfoModal: React.FC<InfoModalProps> = ({
   const handleConfirm = () => {
     try {
       window.localStorage.setItem(storageKey, String(isChecked));
-    } catch {}
+    } catch {
+      console.warn('LocalStorage non disponible');
+    }
     onClose();
   };
 
