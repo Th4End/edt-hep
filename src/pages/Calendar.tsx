@@ -379,15 +379,11 @@ const Calendar = () => {
         (d) => normalizeDay(d.day) === normalized
       );
       if (dayData?.date) {
-        // Supports both "dd/mm/yyyy" and "yyyy-mm-dd"
         let newDate: Date | null = null;
         const val = dayData.date.trim();
 
         if (/^\d{2}\/\d{2}\/\d{4}$/.test(val)) {
           const [dd, mm, yyyy] = val.split("/").map(Number);
-          newDate = new Date(yyyy, mm - 1, dd);
-        } else if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
-          const [yyyy, mm, dd] = val.split("-").map(Number);
           newDate = new Date(yyyy, mm - 1, dd);
         }
 

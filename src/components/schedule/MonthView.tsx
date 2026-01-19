@@ -55,7 +55,7 @@ const MonthView: React.FC<MonthViewProps> = ({
           <div key={`empty-${i}`} className="h-28 border rounded bg-background/50 dark:bg-black-900/50"></div>
         ))}
         {daysInMonth.map((day) => {
-          const dateStr = format(day, "yyyy-MM-dd");
+          const dateStr = format(day, "dd/MM/yyyy");
           const courses = coursesByDate.get(dateStr) || [];
           return (
             <div

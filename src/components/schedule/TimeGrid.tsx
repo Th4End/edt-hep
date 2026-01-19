@@ -94,10 +94,8 @@ function getNowTopForDay(dayDateStr: string, now: Date, dayStartMinutes: number)
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(dayDateStr)) {
     const parts = dayDateStr.split("/").map(Number);
     dd = parts[0]; mm = parts[1]; yyyy = parts[2];
-  } else if (/^\d{4}-\d{2}-\d{2}$/.test(dayDateStr)) {
-    const parts = dayDateStr.split("-").map(Number);
-    yyyy = parts[0]; mm = parts[1]; dd = parts[2];
   } else {
+    console.warn(`Unknown date format in getNowTopForDay: ${dayDateStr}`);
     return null;
   }
 

@@ -37,10 +37,6 @@ function extractYMD(dateStr: string): [number, number, number] {
     const [d, m, y] = dateStr.split("/").map(Number);
     return [y, m, d];
   }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    const [y, m, d] = dateStr.split("-").map(Number);
-    return [y, m, d];
-  }
   console.warn(`Format de date inconnu : ${dateStr}`);
   return [0, 0, 0];
 }
