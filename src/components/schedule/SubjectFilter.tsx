@@ -80,37 +80,21 @@ const SubjectFilter = ({
             className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
             aria-hidden={!isExpanded}
           >
-            {/* Sélecteur distanciel */}
-            <div className="flex items-center space-x-2 pb-2">
-              <Checkbox
-                id="distanciel"
-                checked={filterDistanciel}
-                onCheckedChange={onToggleDistanciel}
-              />
-              <label
-                htmlFor="distanciel"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-1"
-              >
-                <Laptop className="w-4 h-4 text-primary" />
-                  Distanciel uniquement
-              </label>
-            </div>
-          {/* Sélecteur distanciel */}
-          <div className="flex items-center space-x-2 pb-2 border-b border-border">
-            <Checkbox
-              id="distanciel"
-              checked={remoteFilter}
-              onCheckedChange={onToggleRemote}
-            />
-            <label
-              htmlFor="distanciel"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-1"
-            >
-              <Laptop className="w-4 h-4 text-primary" />
-              Distanciel only
-            </label>
-          </div>
-
+                      {/* Sélecteur matières */}
+                      <div className="flex items-center space-x-2 pb-2 border-b border-border">
+                        <Checkbox
+                          id="distanciel"
+                          checked={remoteFilter}
+                          onCheckedChange={onToggleRemote}
+                        />
+                        <label
+                          htmlFor="distanciel"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-1"
+                        >
+                          <Laptop className="w-4 h-4 text-primary" />
+                          Distanciel uniquement
+                        </label>
+                      </div>
             <Divider />
 
             {/* Sélecteur matières */}
