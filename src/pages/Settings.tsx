@@ -316,7 +316,7 @@ const Settings = () => {
                   <div>
                     <span className="font-mono bg-primary/10 text-primary px-2 py-1 rounded-md text-sm">{url.name}</span>
                     <span className="mx-2 text-muted-foreground">→</span>
-                    <span className="font-semibold truncate">{url.url}</span>
+                    <span className="font-semibold truncate text-xs" title={url.url}>{url.url.length > 50 ? `${url.url.substring(0, 50)}...` : url.url}</span>
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => handleRemoveUrl(url.url)}>
                     <Trash2 className="w-4 h-4 text-destructive" />
