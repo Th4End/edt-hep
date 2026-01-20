@@ -192,6 +192,9 @@ const Settings = () => {
         <AccordionItem value="appearance" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Apparence</AccordionTrigger>
           <AccordionContent>
+            <p className="text-sm text-muted-foreground pt-2">
+              Personnalisez l'apparence de l'application. Basculez entre les thèmes et choisissez votre couleur primaire.
+            </p>
             <div className="space-y-6 mt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="theme-toggle" className="text-base">Thème sombre</Label>
@@ -213,7 +216,10 @@ const Settings = () => {
         <AccordionItem value="display" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Affichage</AccordionTrigger>
           <AccordionContent>
-            <Tabs defaultValue="hours">
+            <p className="text-sm text-muted-foreground pt-2">
+              Ajustez les paramètres d'affichage du calendrier, comme la plage horaire et les jours de travail.
+            </p>
+            <Tabs defaultValue="hours" className="mt-4">
               <TabsList>
                 <TabsTrigger value="hours">Heures</TabsTrigger>
                 <TabsTrigger value="days">Jours</TabsTrigger>
@@ -254,6 +260,9 @@ const Settings = () => {
         <AccordionItem value="preferences" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Préférences</AccordionTrigger>
           <AccordionContent>
+            <p className="text-sm text-muted-foreground pt-2">
+              Gérez les paramètres généraux de l'application.
+            </p>
             <div className="space-y-6 mt-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="landing-page-toggle" className="text-base">Afficher la page de bienvenue au démarrage</Label>
@@ -310,6 +319,9 @@ const Settings = () => {
         <AccordionItem value="custom-calendars" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Calendriers personnalisés (iCal)</AccordionTrigger>
           <AccordionContent>
+            <p className="text-sm text-muted-foreground pt-2">
+              Ajoutez des calendriers externes (iCal) pour les afficher en superposition sur votre emploi du temps.
+            </p>
             <div className="space-y-4 mt-4">
               {customUrls.map((url, index) => (
                 <div key={index} className="flex items-center justify-between bg-muted/50 p-3 rounded-lg">
@@ -336,6 +348,9 @@ const Settings = () => {
         <AccordionItem value="shortcuts" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Raccourcis de nom d'utilisateur</AccordionTrigger>
           <AccordionContent>
+            <p className="text-sm text-muted-foreground pt-2">
+              Créez des raccourcis pour vos noms d'utilisateur fréquents pour un accès plus rapide.
+            </p>
             <div className="space-y-4 mt-4">
               {Object.entries(shortcuts).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between bg-muted/50 p-3 rounded-lg">
@@ -387,6 +402,9 @@ const Settings = () => {
         <AccordionItem value="account" className="bg-card p-6 rounded-2xl shadow-soft border border-border/50">
           <AccordionTrigger className="text-xl font-semibold">Compte</AccordionTrigger>
           <AccordionContent>
+            <p className="text-sm text-muted-foreground pt-2">
+              Gérez les actions liées à votre compte, comme la déconnexion.
+            </p>
             <Button variant="destructive" onClick={handleLogout} className="w-full mt-4">
               <LogOut className="w-4 h-4 mr-2" /> Déconnexion
             </Button>
