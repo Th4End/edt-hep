@@ -1,6 +1,7 @@
 import { motion, AnimatePresence, useScroll, useTransform, MotionConfig, type Variants } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { CheckCircle, Smartphone, Grid3x3, Palette, Clock, Shield, ChevronDown, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function LandingPage() {
@@ -56,6 +57,12 @@ const cardVariant: Variants = {
 
 function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    localStorage.setItem('showLandingPage', 'false');
+    navigate('/login');
+  };
 
   useEffect(() => {
     let ticking = false;
@@ -106,14 +113,14 @@ function Header() {
             </motion.a>
           ))}
         </nav>
-        <motion.a
-          href="/login"
+        <motion.button
+          onClick={handleNavigation}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="inline-flex items-center rounded-md bg-blue-600 text-white px-3 py-2 text-sm font-medium shadow hover:bg-blue-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
           Voir mon emploi du temps
-        </motion.a>
+        </motion.button>
       </div>
     </motion.header>
   );
@@ -125,6 +132,12 @@ function Hero() {
   const yTitle = useTransform(scrollYProgress, [0, 1], [0, -16]);
   const yImage = useTransform(scrollYProgress, [0, 1], [0, -8]);
   const opacityImage = useTransform(scrollYProgress, [0, 1], [1, 0.96]);
+  const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    localStorage.setItem('showLandingPage', 'false');
+    navigate('/login');
+  };
 
   return (
     <section ref={ref} className="relative overflow-hidden" aria-labelledby="hero-title">
@@ -152,14 +165,14 @@ function Hero() {
           </motion.p>
 
           <motion.div variants={fadeUp} id="cta" className="mt-6 md:mt-8 flex items-center justify-center gap-3">
-            <motion.a
-              href="/login"
+            <motion.button
+              onClick={handleNavigation}
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center rounded-md bg-blue-600 text-white px-4 py-2.5 md:px-5 md:py-3 text-sm md:text-base font-medium shadow hover:bg-blue-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               Voir mon emploi du temps
-            </motion.a>
+            </motion.button>
             <motion.a
               href="https://github.com/D-Seonay/edt-hep"
               whileHover={{ y: -1 }}
@@ -484,26 +497,34 @@ function FAQItem({ item, delay }: { item: { q: string; a: string }; delay: numbe
 }
 
 function Footer() {
+  const navigate = useNavigate();
+  const handleNavigation = () => {
+    localStorage.setItem('showLandingPage', 'false');
+    navigate('/login');
+  };
+
   return (
     <footer className="border-t border-gray-100" role="contentinfo">
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-12 text-sm text-gray-700">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>© {new Date().getFullYear()} EDT Manager</div>
           <div className="flex items-center gap-4">
-            {[
-              { href: "/login", label: "Application" },
-              { href: "https://github.com/D-Seonay/edt-hep", label: "Repository" },
-            ].map((l) => (
-              <motion.a
-                key={l.href}
-                href={l.href}
-                whileHover={{ color: "#2563EB", y: -1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 24 }}
-                className="hover:text-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
-              >
-                {l.label}
-              </motion.a>
-            ))}
+            <motion.button
+              onClick={handleNavigation}
+              whileHover={{ color: "#2563EB", y: -1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              className="hover:text-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+            >
+              Application
+            </motion.button>
+            <motion.a
+              href="https://github.com/D-Seonay/edt-hep"
+              whileHover={{ color: "#2563EB", y: -1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              className="hover:text-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+            >
+              Repository
+            </motion.a>
           </div>
         </div>
       </div>
